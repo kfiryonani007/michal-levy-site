@@ -7,8 +7,10 @@ import { about } from '../data/site';
  *  ABOUT — portrait beside the text, on a cream ground
  * ============================================================================
  *  Two columns on desktop (image on the right in RTL, text on the left),
- *  stacking to image-then-text on mobile. The thin sand frame offset behind
- *  the photo is the one decorative flourish in this section.
+ *  stacking to image-then-text on mobile. The photo sits flush in its own
+ *  frame — no offset decorative border behind it (there used to be one; it
+ *  read as a misaligned photo rather than a deliberate flourish, so it's
+ *  gone).
  * ============================================================================
  */
 export default function About() {
@@ -25,11 +27,6 @@ export default function About() {
           {/* --- Portrait --- */}
           <Reveal className="relative order-1" y={30}>
             <div className="relative mx-auto max-w-md lg:max-w-none">
-              {/* offset hairline frame */}
-              <div
-                className="absolute -bottom-4 -left-4 h-full w-full border border-accent lg:-bottom-6 lg:-left-6"
-                aria-hidden="true"
-              />
               <img
                 src={src}
                 alt={alt}
@@ -40,7 +37,7 @@ export default function About() {
                 onError={() => setPortraitFailed(true)}
                 /* object-top: the portrait is a close crop, so anchoring to the
                    top keeps her face in frame at the 4:5 ratio */
-                className="relative aspect-[4/5] w-full object-cover object-top"
+                className="aspect-[4/5] w-full border border-accent object-cover object-top"
               />
             </div>
           </Reveal>
