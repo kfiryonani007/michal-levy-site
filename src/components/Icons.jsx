@@ -148,3 +148,11 @@ export const IconUpload = (p) => (
     <path d="M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15" />
   </svg>
 );
+
+export const IconCart = (p) => (
+  <svg {...base} {...p}>
+    <path d="M3 4h2l1.6 10.2A2 2 0 0 0 8.57 16H18a2 2 0 0 0 1.95-1.57L21.5 8H6.2" />
+    <circle cx="9.5" cy="20" r="1.4" />
+    <circle cx="17.5" cy="20" r="1.4" />
+  </svg>
+);

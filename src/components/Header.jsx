@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from './Logo';
-import { IconWhatsapp, IconClose } from './Icons';
+import { IconWhatsapp, IconClose, IconCart } from './Icons';
 import { navLinks, whatsappLink } from '../data/site';
 import { useSectionNav, scrollToSection } from '../lib/navigation';
 import { trackClick } from '../lib/analytics';
+import { useCart } from '../lib/CartContext';
 
 /**
  * ============================================================================
@@ -33,6 +34,7 @@ export default function Header() {
   const location = useLocation();
   const goToSection = useSectionNav();
   const isHome = location.pathname === '/';
+  const cart = useCart();
 
   /* --- swap to the solid state after a short scroll ---------------------- */
   useEffect(() => {
@@ -180,6 +182,24 @@ export default function Header() {
 
           {/* WhatsApp CTA — the end (left) edge in RTL */}
           <div className="flex items-center gap-3">
+            {/* Cart — only worth showing once something's actually in it */}
+            {cart.count > 0 && (
+              <button
+                type="button"
+                onClick={() => handleSection('contact')}
+                aria-label={`עגלה, ${cart.count} פריטים — מעבר ליצירת קשר`}
+                className="relative flex h-11 w-11 items-center justify-center transition-opacity hover:opacity-70"
+              >
+                <IconCart className="h-5 w-5" />
+                <span
+                  className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center
+                             rounded-full bg-clay px-1 text-[0.65rem] font-medium text-shell"
+                  aria-hidden="true"
+                >
+                  {cart.count}
+                </span>
+              </button>
+            )}
             <a
               href={whatsappLink()}
               target="_blank"
@@ -257,6 +277,18 @@ export default function Header() {
             );
           })}
 
+          {cart.count > 0 && (
+            <button
+              type="button"
+              onClick={() => handleSection('contact')}
+              className="mt-10 flex w-full items-center justify-center gap-2 rounded-sm border
+                         border-clay px-6 py-3.5 text-sm font-medium tracking-wide text-clay"
+            >
+              <IconCart className="h-4 w-4" />
+              העגלה שלי ({cart.count})
+            </button>
+          )}
+
           <a
             href={whatsappLink()}
             target="_blank"
@@ -265,7 +297,7 @@ export default function Header() {
               setMenuOpen(false);
               trackClick('header-menu-whatsapp');
             }}
-            className="btn-solid mt-10 w-full"
+            className={cart.count > 0 ? 'btn-solid mt-3 w-full' : 'btn-solid mt-10 w-full'}
           >
             <IconWhatsapp className="h-4 w-4" />
             בואו נדבר בוואטסאפ

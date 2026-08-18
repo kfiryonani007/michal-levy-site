@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { IconClose, IconArrowLeft, IconWhatsapp } from './Icons';
+import { IconClose, IconArrowLeft, IconWhatsapp, IconCheck, IconCart } from './Icons';
 import { whatsappLink } from '../data/site';
 import { formatPrice } from '../lib/pricing';
+import { useCart } from '../lib/CartContext';
 
 /**
  * ============================================================================
@@ -27,6 +28,7 @@ export default function Lightbox({ items, index, onClose, onStep }) {
   const item = items[index];
   const sizes = item?.sizes ?? [];
   const [sizeIndex, setSizeIndex] = useState(0);
+  const cart = useCart();
 
   // A fresh piece means a fresh size choice, not whatever was picked before.
   useEffect(() => {
@@ -174,21 +176,52 @@ export default function Lightbox({ items, index, onClose, onStep }) {
 
             <div className="flex flex-col items-start gap-3 sm:items-end">
               <p className="font-serif text-2xl">{formatPrice(sizes[sizeIndex].price)}</p>
-              <a
-                href={whatsappLink(
-                  `היי מיכל, אני מתעניין/ת ב"${item.title}" במידה ${sizes[sizeIndex].label} (${formatPrice(
-                    sizes[sizeIndex].price
-                  )}) — אשמח לתאם פגישה.`
-                )}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-sm bg-shell px-6 py-3
-                           text-sm font-medium tracking-wide text-ink transition-all duration-500
-                           ease-soft hover:bg-sand"
-              >
-                <IconWhatsapp className="h-4 w-4" />
-                קביעת פגישה
-              </a>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    cart.toggle({
+                      itemId: item.id,
+                      title: item.title,
+                      sizeLabel: sizes[sizeIndex].label,
+                      price: sizes[sizeIndex].price,
+                    })
+                  }
+                  className={`inline-flex items-center justify-center gap-2 rounded-sm border px-5 py-3
+                             text-sm font-medium tracking-wide transition-all duration-300 ${
+                               cart.has(item.id, sizes[sizeIndex].label)
+                                 ? 'border-clay bg-clay text-shell'
+                                 : 'border-white/40 text-white hover:border-white'
+                             }`}
+                >
+                  {cart.has(item.id, sizes[sizeIndex].label) ? (
+                    <>
+                      <IconCheck className="h-4 w-4" />
+                      נוסף לעגלה
+                    </>
+                  ) : (
+                    <>
+                      <IconCart className="h-4 w-4" />
+                      הוספה לעגלה
+                    </>
+                  )}
+                </button>
+                <a
+                  href={whatsappLink(
+                    `היי מיכל, אני מתעניין/ת ב"${item.title}" במידה ${sizes[sizeIndex].label} (${formatPrice(
+                      sizes[sizeIndex].price
+                    )}) — אשמח לתאם פגישה.`
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-sm bg-shell px-6 py-3
+                             text-sm font-medium tracking-wide text-ink transition-all duration-500
+                             ease-soft hover:bg-sand"
+                >
+                  <IconWhatsapp className="h-4 w-4" />
+                  קביעת פגישה
+                </a>
+              </div>
             </div>
           </div>
         </div>

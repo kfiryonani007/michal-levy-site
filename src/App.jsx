@@ -7,6 +7,7 @@ import GalleryPage from './pages/GalleryPage';
 import ServicePage from './pages/ServicePage';
 import AdminApp from './admin/AdminApp';
 import { trackPageView } from './lib/analytics';
+import { CartProvider } from './lib/CartContext';
 
 /**
  * ============================================================================
@@ -64,7 +65,7 @@ function Shell() {
   }
 
   return (
-    <>
+    <CartProvider>
       <Header />
       <main id="main">
         <Routes>
@@ -76,6 +77,6 @@ function Shell() {
         </Routes>
       </main>
       <Footer />
-    </>
+    </CartProvider>
   );
 }

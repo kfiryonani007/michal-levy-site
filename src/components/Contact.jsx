@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import Reveal from './Reveal';
-import { IconWhatsapp, IconPhone, IconMail, IconCheck } from './Icons';
+import { IconWhatsapp, IconPhone, IconMail, IconCheck, IconClose } from './Icons';
 import { contact } from '../data/site';
 import { supabase } from '../lib/supabaseClient';
+import { useCart } from '../lib/CartContext';
+import { formatPrice } from '../lib/pricing';
 
 /**
  * ============================================================================
@@ -33,6 +35,11 @@ import { supabase } from '../lib/supabaseClient';
 export default function Contact() {
   const [status, setStatus] = useState('idle'); // idle | success
   const [fieldErrors, setFieldErrors] = useState({});
+  const cart = useCart();
+
+  /** "תבליט פיסולי (‎50×70 ס״מ, ₪3,400), טריפטיך גלי (‎80×110 ס״מ, ₪6,700)" */
+  const cartLine = () =>
+    cart.items.map((i) => `${i.title} (${i.sizeLabel}, ${formatPrice(i.price)})`).join(', ');
 
   const validate = (data) => {
     const errors = {};
@@ -59,6 +66,7 @@ export default function Contact() {
     const lines = ['פנייה חדשה מהאתר', '', `שם: ${data.get('name').trim()}`, `טלפון: ${data.get('phone').trim()}`];
     const email = data.get('email').trim();
     if (email) lines.push(`אימייל: ${email}`);
+    if (cart.items.length) lines.push('', `אני מעוניין/ת ב: ${cartLine()}`);
     const message = data.get('message').trim();
     if (message) lines.push('', 'על הפרויקט:', message);
     return lines.join('\n');
@@ -87,16 +95,20 @@ export default function Contact() {
     // Best-effort — logged for the admin's leads table, but never blocks or
     // delays the WhatsApp flow above, which is the part that actually
     // reaches Michal.
+    const projectMessage = [cart.items.length ? `מעוניין/ת ב: ${cartLine()}` : '', data.get('message').trim()]
+      .filter(Boolean)
+      .join(' | ');
     supabase
       .from('leads')
       .insert({
         name: data.get('name').trim(),
         phone: data.get('phone').trim(),
         email: data.get('email').trim() || null,
-        message: data.get('message').trim() || null,
+        message: projectMessage || null,
       })
       .then(() => {}, () => {});
 
+    cart.clear();
     form.reset();
   };
 
@@ -163,6 +175,37 @@ export default function Contact() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} noValidate>
+                {cart.items.length > 0 && (
+                  <div className="mb-8 border border-clay/50 bg-warmtaupe/10 p-5">
+                    <p className="text-[0.78rem] tracking-[0.14em] text-taupe">
+                      היצירות שבחרתם ({cart.items.length})
+                    </p>
+                    <ul className="mt-3 space-y-2">
+                      {cart.items.map((i) => (
+                        <li
+                          key={i.key}
+                          className="flex items-center justify-between gap-3 text-[0.9rem]"
+                        >
+                          <span className="min-w-0 truncate">
+                            {i.title} <span className="text-ink/50">— {i.sizeLabel}</span>
+                          </span>
+                          <span className="flex shrink-0 items-center gap-3">
+                            <span className="text-ink/70">{formatPrice(i.price)}</span>
+                            <button
+                              type="button"
+                              onClick={() => cart.remove(i.itemId, i.sizeLabel)}
+                              aria-label={`הסרת ${i.title} מהעגלה`}
+                              className="text-ink/40 hover:text-wood"
+                            >
+                              <IconClose className="h-3.5 w-3.5" />
+                            </button>
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
                 <div className="grid gap-7 sm:grid-cols-2">
                   {/* Name */}
                   <div>
