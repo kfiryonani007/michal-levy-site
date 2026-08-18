@@ -1,0 +1,10 @@
+node_modules
+dist
+dist-standalone
+dist-ssr
+*.local
+.DS_Store
+.vite
+*.log
+WhatsApp Image*.jpeg
+.claude

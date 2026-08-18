@@ -1,0 +1,181 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   Base — RTL-first, warm neutral canvas, generous white space
+   ========================================================================== */
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Offset anchor scrolling so the sticky header never covers a heading */
+    scroll-padding-top: 6rem;
+    /* A global bump to all text: every Tailwind text-size utility in this
+       project is rem-based (text-sm, text-lg, text-[2rem]…), so raising the
+       root size scales every one of them together, in proportion, with one
+       line — instead of hunting down and nudging each size individually
+       across a dozen components. First pass was 17px (+6%) and still read as
+       small on the service cards, so this is a firmer step: 16px → 19px,
+       about +19%. */
+    font-size: 118.75%;
+  }
+
+  body {
+    @apply bg-shell font-sans text-ink antialiased;
+    font-weight: 300;
+    text-align: right;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-serif;
+    font-weight: 400;
+    text-wrap: balance;
+  }
+
+  /* Visible, on-brand keyboard focus everywhere */
+  :focus-visible {
+    outline: 2px solid theme('colors.wood');
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: theme('colors.sand');
+    color: theme('colors.ink');
+  }
+
+  /* Respect users who ask for reduced motion — kill all reveal/parallax motion */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+/* ==========================================================================
+   Components — the small vocabulary of repeated pieces
+   ========================================================================== */
+@layer components {
+  /* Standard section container */
+  .container-site {
+    @apply mx-auto w-full max-w-content px-6 sm:px-8 lg:px-12;
+  }
+
+  /* The small, wide-tracked kicker that sits above every main heading
+     (e.g. "עבודת יד" above "היצירות שלי") */
+  .eyebrow {
+    @apply mb-5 block text-[0.68rem] font-medium uppercase text-taupe;
+    letter-spacing: 0.28em;
+  }
+
+  /* Primary filled button */
+  .btn-solid {
+    @apply inline-flex items-center justify-center gap-2 rounded-sm bg-ink px-8 py-3.5
+           text-sm font-medium tracking-wide text-shell transition-all duration-500
+           ease-soft hover:bg-wood;
+  }
+
+  /* Secondary outline button */
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-sm border border-ink/25
+           bg-transparent px-8 py-3.5 text-sm font-medium tracking-wide text-ink
+           transition-all duration-500 ease-soft hover:border-ink hover:bg-ink hover:text-shell;
+  }
+
+  /* Ghost button used over the hero photograph.
+     Tinted with ink rather than white: the photo is pale, so a light tint left
+     white label text barely legible. Darkening instead keeps the button
+     readable wherever it lands in the frame. */
+  .btn-on-image {
+    @apply inline-flex items-center justify-center gap-2 rounded-sm border border-white/60
+           bg-ink/30 px-8 py-3.5 text-sm font-medium tracking-wide text-white
+           backdrop-blur-sm transition-all duration-500 ease-soft
+           hover:border-white hover:bg-white hover:text-ink;
+  }
+
+  /* Thin decorative rule used between the kicker and headings */
+  .hairline {
+    @apply h-px w-14 bg-accent;
+  }
+}
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+@layer utilities {
+  /* Soft vertical scrim so white text stays readable over a light photograph */
+  .scrim {
+    background: linear-gradient(
+      to top,
+      rgba(43, 36, 32, 0.62) 0%,
+      rgba(43, 36, 32, 0.34) 45%,
+      rgba(43, 36, 32, 0.18) 100%
+    );
+  }
+
+  /* --- Hero scrims -------------------------------------------------------
+     The hero photograph is very light, so white type needs help. The amount
+     of help is width-dependent: on a phone the headline spans the full frame
+     and sits over the pale sofa, so it needs a firm bottom scrim. On desktop
+     the copy is confined to the darker right-hand third, so the overlay can
+     be much lighter and the room stays bright and airy.
+     ---------------------------------------------------------------------- */
+  .hero-scrim-v {
+    background: linear-gradient(
+      to bottom,
+      rgba(43, 36, 32, 0.44) 0%,
+      rgba(43, 36, 32, 0.16) 26%,
+      rgba(43, 36, 32, 0.42) 58%,
+      rgba(43, 36, 32, 0.72) 100%
+    );
+  }
+
+  /* Horizontal pool of shade behind the copy, from the start (right) edge */
+  .hero-scrim-h {
+    background: linear-gradient(
+      to left,
+      rgba(43, 36, 32, 0.3) 0%,
+      rgba(43, 36, 32, 0.1) 40%,
+      rgba(43, 36, 32, 0) 72%
+    );
+  }
+
+  @media (min-width: 1024px) {
+    .hero-scrim-v {
+      background: linear-gradient(
+        to bottom,
+        rgba(43, 36, 32, 0.3) 0%,
+        rgba(43, 36, 32, 0.04) 30%,
+        rgba(43, 36, 32, 0.12) 64%,
+        rgba(43, 36, 32, 0.46) 100%
+      );
+    }
+    .hero-scrim-h {
+      background: linear-gradient(
+        to left,
+        rgba(43, 36, 32, 0.36) 0%,
+        rgba(43, 36, 32, 0.13) 38%,
+        rgba(43, 36, 32, 0) 66%
+      );
+    }
+  }
+
+  .text-shadow-soft {
+    text-shadow: 0 1px 24px rgba(43, 36, 32, 0.35);
+  }
+}
