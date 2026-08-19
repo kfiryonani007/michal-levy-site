@@ -28,6 +28,8 @@ const LABELS = {
   icon: 'אייקון', steps: 'שלבים', note: 'הערה בתיבה', page: 'עמוד הגלריה',
   allLabel: 'תווית "הכול"', emptyTitle: 'כותרת כשאין תמונות', emptyText: 'טקסט כשאין תמונות',
   cta: 'כפתור', value: 'ערך', webm: 'קובץ WebM', mp4: 'קובץ MP4',
+  metaTitle: 'כותרת מטא (Meta Title)', metaDescription: 'תיאור מטא (Meta Description)',
+  pixelCode: 'קוד פיקסלים / מעקב (Google/Facebook Pixel)',
 };
 
 export const clone = (v) => JSON.parse(JSON.stringify(v));
@@ -169,14 +171,16 @@ export function Field({ label, value, path, onChange, depth = 0 }) {
   }
 
   const key = path[path.length - 1];
-  const long = typeof value === 'string' && (value.length > 70 || value.includes('\n'));
+  const long =
+    typeof value === 'string' && (value.length > 70 || value.includes('\n') || key === 'pixelCode');
   return (
     <label className="block">
       <span className="mb-1 block text-[0.8rem] text-ink/70">{label}</span>
       {long ? (
         <textarea
           value={value}
-          rows={Math.min(8, Math.ceil(value.length / 70) + 1)}
+          dir={key === 'pixelCode' ? 'ltr' : undefined}
+          rows={key === 'pixelCode' ? 6 : Math.min(8, Math.ceil(value.length / 70) + 1)}
           onChange={(e) => onChange(path, e.target.value)}
           className="w-full resize-y rounded-sm border border-accent bg-white px-3 py-2
                      text-[0.95rem] leading-[1.8] focus:border-clay focus:outline-none"

@@ -12,6 +12,7 @@ const SECTIONS = [
   { key: 'gallerySection', label: 'גלריה — כותרות' },
   { key: 'stats', label: 'רצועת מספרים' },
   { key: 'navLinks', label: 'תפריט עליון' },
+  { key: 'seo', label: 'SEO ופיקסלים' },
 ];
 
 /**

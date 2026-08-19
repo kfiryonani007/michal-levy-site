@@ -8,6 +8,7 @@ import ServicePage from './pages/ServicePage';
 import AdminApp from './admin/AdminApp';
 import { trackPageView } from './lib/analytics';
 import { CartProvider } from './lib/CartContext';
+import SeoHead from './components/SeoHead';
 
 /**
  * ============================================================================
@@ -66,6 +67,7 @@ function Shell() {
 
   return (
     <CartProvider>
+      <SeoHead />
       <Header />
       <main id="main">
         <Routes>

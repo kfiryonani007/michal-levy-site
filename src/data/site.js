@@ -15,6 +15,24 @@
  */
 
 /* ---------------------------------------------------------------------------
+ *  SEO + tracking pixels
+ * ---------------------------------------------------------------------------
+ *  metaTitle/metaDescription override the tags baked into index.html at
+ *  build time — see src/components/SeoHead.jsx, which writes them into
+ *  <head> at runtime once this loads. pixelCode is pasted verbatim (a
+ *  Facebook Pixel / Google Ads / TikTok Pixel <script> snippet, exactly as
+ *  the ad platform gives it to you) and gets injected into <head> the same
+ *  way — admin-only input, so this is trusted the same as any other content
+ *  edit here.
+ * ------------------------------------------------------------------------- */
+export const seo = {
+  metaTitle: 'מיכל לוי | אמנות, עיצוב ועוד — יצירות קיר בהתאמה אישית',
+  metaDescription:
+    'מיכל לוי — אמנית ומעצבת פנים. יצירות קיר דו-ממדיות ותלת-ממדיות בהתאמה אישית, בעבודת יד מחומרים יוקרתיים. מעל 30 שנות ניסיון.',
+  pixelCode: '',
+};
+
+/* ---------------------------------------------------------------------------
  *  Contact details
  * ------------------------------------------------------------------------- */
 export const contact = {
