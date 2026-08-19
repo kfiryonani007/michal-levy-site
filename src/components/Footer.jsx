@@ -138,7 +138,25 @@ export default function Footer() {
           <p className="text-[0.82rem] text-taupe">
             © {year} מיכל לוי — אמנות, עיצוב ועוד...
           </p>
-          <p className="text-[0.82rem] text-taupe">כל הזכויות שמורות</p>
+          <div className="flex flex-col items-center gap-3 sm:flex-row">
+            <p className="text-[0.82rem] text-taupe">כל הזכויות שמורות</p>
+            <a
+              href="https://kfir-ai.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-[12.5px] font-medium text-[#8f8f9b]
+                         no-underline transition-opacity duration-200 hover:opacity-75"
+            >
+              <img
+                src="https://kfir-ai.com/assets/kfir-ai-icon-transparent.png"
+                alt=""
+                width="20"
+                height="17"
+                className="block"
+              />
+              האתר נבנה על ידי <strong className="font-extrabold text-[#9D7AEE]">KFIR AI</strong>
+            </a>
+          </div>
         </div>
       </div>
     </footer>
