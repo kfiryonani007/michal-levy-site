@@ -34,8 +34,29 @@ export default function Footer() {
       <div className="container-site">
         <div className="grid gap-12 pb-14 sm:grid-cols-2 lg:grid-cols-[1.1fr_0.8fr_1fr] lg:gap-10">
           {/* --- Logo lockup --- */}
-          <div className="flex justify-center sm:col-span-2 sm:justify-start lg:col-span-1">
+          <div className="flex flex-wrap items-start justify-center gap-x-10 gap-y-8 sm:col-span-2 sm:justify-start lg:col-span-1">
             <Logo variant="stacked" className="text-ink" />
+
+            {/* KFIR AI credit — built as an exact twin of the logo lockup
+                above (same mark height, same name size, same slogan-line
+                treatment), not a separate badge design. */}
+            <a
+              href="https://kfir-ai.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              dir="ltr"
+              className="flex flex-col items-center text-center text-ink no-underline"
+            >
+              <img
+                src="https://kfir-ai.com/assets/kfir-ai-icon-transparent.png"
+                alt=""
+                className="h-16 w-auto"
+              />
+              <span className="mt-4 text-3xl font-semibold leading-none tracking-tight">
+                KFIR <span className="text-[#9D7AEE]">AI</span>
+              </span>
+              <span className="mt-2.5 text-lg leading-none opacity-70">האתר נבנה על ידי</span>
+            </a>
           </div>
 
           {/* --- Section links --- */}
@@ -141,35 +162,6 @@ export default function Footer() {
           <p className="text-[0.82rem] text-taupe">כל הזכויות שמורות</p>
         </div>
       </div>
-
-      {/* --- KFIR AI badge — fixed to the corner, floats with the page (not
-          part of the footer's own scroll flow) --- */}
-      <a
-        href="https://kfir-ai.com"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="group fixed bottom-6 left-6 z-40 flex flex-col items-center gap-2.5
-                   rounded-sm bg-shell/95 p-4 text-center no-underline shadow-lg backdrop-blur-sm
-                   transition-transform duration-300 ease-soft hover:-translate-y-1"
-      >
-        <span
-          className="flex h-16 w-16 items-center justify-center rounded-sm border border-accent
-                     bg-shell transition-colors duration-300 group-hover:border-[#9D7AEE]"
-        >
-          <img
-            src="https://kfir-ai.com/assets/kfir-ai-icon-transparent.png"
-            alt="KFIR AI"
-            width="32"
-            height="27"
-            className="block"
-          />
-        </span>
-        <span className="text-[11px] font-medium leading-tight text-[#8f8f9b]">
-          האתר נבנה על ידי
-          <br />
-          <strong className="text-[0.8rem] font-extrabold text-[#9D7AEE]">KFIR AI</strong>
-        </span>
-      </a>
     </footer>
   );
 }
