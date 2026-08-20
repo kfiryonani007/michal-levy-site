@@ -34,29 +34,8 @@ export default function Footer() {
       <div className="container-site">
         <div className="grid gap-12 pb-14 sm:grid-cols-2 lg:grid-cols-[1.1fr_0.8fr_1fr] lg:gap-10">
           {/* --- Logo lockup --- */}
-          <div className="flex flex-wrap items-start justify-center gap-x-10 gap-y-8 sm:col-span-2 sm:justify-start lg:col-span-1">
+          <div className="flex justify-center sm:col-span-2 sm:justify-start lg:col-span-1">
             <Logo variant="stacked" className="text-ink" />
-
-            {/* KFIR AI credit — built as an exact twin of the logo lockup
-                above (same mark height, same name size, same slogan-line
-                treatment), not a separate badge design. */}
-            <a
-              href="https://kfir-ai.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              dir="ltr"
-              className="flex flex-col items-center text-center text-ink no-underline"
-            >
-              <img
-                src="https://kfir-ai.com/assets/kfir-ai-icon-transparent.png"
-                alt=""
-                className="h-16 w-auto"
-              />
-              <span className="mt-4 text-3xl font-semibold leading-none tracking-tight">
-                KFIR <span className="text-[#9D7AEE]">AI</span>
-              </span>
-              <span className="mt-2.5 text-lg leading-none opacity-70">האתר נבנה על ידי</span>
-            </a>
           </div>
 
           {/* --- Section links --- */}
@@ -159,6 +138,28 @@ export default function Footer() {
           <p className="text-[0.82rem] text-taupe">
             © {year} מיכל לוי — אמנות, עיצוב ועוד...
           </p>
+
+          {/* KFIR AI credit — deliberately kept at the copyright bar's own
+              scale so it reads as a signature, not a second brand competing
+              with Michal's logo above. */}
+          <a
+            href="https://kfir-ai.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center gap-2 text-[0.82rem] text-taupe no-underline
+                       transition-colors duration-300 hover:text-ink"
+          >
+            <span>האתר נבנה על ידי</span>
+            <img
+              src="https://kfir-ai.com/assets/kfir-ai-icon-transparent.png"
+              alt=""
+              className="h-6 w-auto opacity-80 transition-opacity duration-300 group-hover:opacity-100"
+            />
+            <span dir="ltr" className="font-semibold tracking-tight">
+              KFIR <span className="text-[#9D7AEE]">AI</span>
+            </span>
+          </a>
+
           <p className="text-[0.82rem] text-taupe">כל הזכויות שמורות</p>
         </div>
       </div>
