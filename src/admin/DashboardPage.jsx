@@ -13,6 +13,7 @@ import {
 } from 'recharts';
 import { supabase } from '../lib/supabaseClient';
 import MigrationNotice from './MigrationNotice';
+import { DEFAULT_RATE } from './CommissionPage';
 
 const PIE_COLORS = ['#A65D35', '#A6907E', '#2B2420', '#C9B294'];
 
@@ -82,7 +83,7 @@ export default function DashboardPage() {
       }
 
       const storedRate = Number(commissionRes.data?.value?.rate);
-      const rate = Number.isFinite(storedRate) && storedRate >= 0 ? storedRate : 15;
+      const rate = Number.isFinite(storedRate) && storedRate >= 0 ? storedRate : DEFAULT_RATE;
 
       const leads = leadsAll.data ?? [];
       const views = viewsAll.data ?? [];

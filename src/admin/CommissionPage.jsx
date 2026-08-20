@@ -23,7 +23,8 @@ import MigrationNotice from './MigrationNotice';
  *  config that never reaches a visitor's bundle.
  * ============================================================================
  */
-const DEFAULT_RATE = 15;
+/** Starting rate, used until a different one is saved on this screen. */
+export const DEFAULT_RATE = 10;
 const SETTINGS_KEY = 'commission';
 
 const shekels = (n) => `₪${Number(n || 0).toLocaleString('he-IL', { maximumFractionDigits: 0 })}`;
