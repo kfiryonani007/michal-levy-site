@@ -12,7 +12,7 @@ import { supabase } from './supabaseClient';
  */
 const SESSION_KEY = 'michal-site-session-id';
 
-function sessionId() {
+export function sessionId() {
   try {
     let id = sessionStorage.getItem(SESSION_KEY);
     if (!id) {
@@ -96,6 +96,12 @@ export async function trackPageView(path) {
 export function trackClick(label) {
   supabase
     .from('click_events')
-    .insert({ label, path: window.location.hash.replace(/^#/, '') || '/' })
+    .insert({
+      label,
+      path: window.location.hash.replace(/^#/, '') || '/',
+      // Same id the page views carry, so the admin can read a lead's clicks
+      // and pages as one timeline (see LeadDrawer).
+      session_id: sessionId(),
+    })
     .then(() => {}, () => {});
 }

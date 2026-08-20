@@ -5,6 +5,7 @@ const NAV = [
   { to: '/admin', label: 'מסך בקרה', end: true },
   { to: '/admin/leads', label: 'מערכת לידים' },
   { to: '/admin/projects', label: 'מערכת פרויקטים' },
+  { to: '/admin/commission', label: 'עמלת סוחר' },
   { to: '/admin/settings', label: 'הגדרות אתר' },
 ];
 

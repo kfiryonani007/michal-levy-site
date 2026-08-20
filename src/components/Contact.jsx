@@ -5,6 +5,7 @@ import { contact } from '../data/site';
 import { supabase } from '../lib/supabaseClient';
 import { useCart } from '../lib/CartContext';
 import { formatPrice } from '../lib/pricing';
+import { sessionId } from '../lib/analytics';
 
 /**
  * ============================================================================
@@ -98,13 +99,35 @@ export default function Contact() {
     const projectMessage = [cart.items.length ? `מעוניין/ת ב: ${cartLine()}` : '', data.get('message').trim()]
       .filter(Boolean)
       .join(' | ');
+    const core = {
+      name: data.get('name').trim(),
+      phone: data.get('phone').trim(),
+      email: data.get('email').trim() || null,
+      message: projectMessage || null,
+    };
+    const enriched = {
+      ...core,
+      // Structured copy of the cart — the message string above stays for
+      // readability, but the admin panel reads this instead of parsing prose.
+      items: cart.items.map((i) => ({
+        title: i.title,
+        sizeLabel: i.sizeLabel,
+        price: i.price,
+      })),
+      // Ties the lead to its own page views and clicks (see LeadDrawer).
+      session_id: sessionId(),
+    };
+
+    // `items` / `session_id` only exist once supabase/migrations/001 has run.
+    // Against an un-migrated database PostgREST rejects the whole row
+    // (PGRST204), and since this write is fire-and-forget the lead would
+    // vanish silently — so fall back to the columns that have always existed.
+    // Capturing the lead always matters more than capturing the extras.
     supabase
       .from('leads')
-      .insert({
-        name: data.get('name').trim(),
-        phone: data.get('phone').trim(),
-        email: data.get('email').trim() || null,
-        message: projectMessage || null,
+      .insert(enriched)
+      .then(({ error }) => {
+        if (error) return supabase.from('leads').insert(core);
       })
       .then(() => {}, () => {});
 

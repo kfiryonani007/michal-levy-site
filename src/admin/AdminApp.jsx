@@ -5,6 +5,7 @@ import AdminLayout from './AdminLayout';
 import DashboardPage from './DashboardPage';
 import LeadsPage from './LeadsPage';
 import ProjectsPage from './ProjectsPage';
+import CommissionPage from './CommissionPage';
 import SettingsPage from './SettingsPage';
 
 /**
@@ -44,6 +45,7 @@ export default function AdminApp() {
                 <Route path="/" element={<DashboardPage />} />
                 <Route path="/leads" element={<LeadsPage />} />
                 <Route path="/projects" element={<ProjectsPage />} />
+                <Route path="/commission" element={<CommissionPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="*" element={<Navigate to="/admin" replace />} />
               </Routes>

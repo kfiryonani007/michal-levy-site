@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   BarChart,
   Bar,
@@ -13,6 +14,8 @@ import {
 import { supabase } from '../lib/supabaseClient';
 
 const PIE_COLORS = ['#A65D35', '#A6907E', '#2B2420', '#C9B294'];
+
+const shekels = (n) => `₪${Number(n || 0).toLocaleString('he-IL', { maximumFractionDigits: 0 })}`;
 
 function StatCard({ label, value }) {
   return (
@@ -62,10 +65,11 @@ export default function DashboardPage() {
       const startOfWeek = daysAgo(7).toISOString();
       const startOfMonth = daysAgo(30).toISOString();
 
-      const [leadsAll, viewsAll, clicksAll] = await Promise.all([
-        supabase.from('leads').select('created_at, service'),
+      const [leadsAll, viewsAll, clicksAll, commissionRes] = await Promise.all([
+        supabase.from('leads').select('created_at, service, status, sale_amount'),
         supabase.from('page_views').select('created_at, path, referrer, device, session_id'),
         supabase.from('click_events').select('created_at, label'),
+        supabase.from('site_settings').select('value').eq('key', 'commission').maybeSingle(),
       ]);
 
       if (cancelled) return;
@@ -75,6 +79,9 @@ export default function DashboardPage() {
         );
         return;
       }
+
+      const storedRate = Number(commissionRes.data?.value?.rate);
+      const rate = Number.isFinite(storedRate) && storedRate >= 0 ? storedRate : 15;
 
       const leads = leadsAll.data ?? [];
       const views = viewsAll.data ?? [];
@@ -115,7 +122,14 @@ export default function DashboardPage() {
       const leadsByService = countBy(leads, 'service').slice(0, 6);
       const topClicks = countBy(clicks, 'label').slice(0, 6);
 
+      const soldLeads = leads.filter((l) => l.status === 'sold');
+      const grossSales = soldLeads.reduce((sum, l) => sum + Number(l.sale_amount || 0), 0);
+
       setData({
+        commissionRate: rate,
+        soldCount: soldLeads.length,
+        grossSales,
+        commissionDue: (grossSales * rate) / 100,
         leadsToday: since(leads, startOfDay).length,
         leadsWeek: since(leads, startOfWeek).length,
         leadsMonth: since(leads, startOfMonth).length,
@@ -155,6 +169,27 @@ export default function DashboardPage() {
           <StatCard label="השבוע" value={data.leadsWeek} />
           <StatCard label="היום" value={data.leadsToday} />
           <StatCard label="סה״כ לידים" value={data.leadsTotal} />
+        </div>
+      </section>
+
+      {/* --- Sales / commission --- */}
+      <section>
+        <div className="mb-3 flex items-baseline justify-between gap-3">
+          <p className="text-[0.85rem] font-medium text-ink/70">מכירות ועמלה</p>
+          <Link
+            to="/admin/commission"
+            className="text-[0.8rem] text-clay underline underline-offset-2 hover:opacity-75"
+          >
+            לפירוט המלא
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          <div className="rounded-sm border border-clay/40 bg-clay/10 p-5">
+            <p className="text-[0.78rem] text-ink/60">עמלת סוחר ({data.commissionRate}%)</p>
+            <p className="mt-2 text-3xl font-light text-clay">{shekels(data.commissionDue)}</p>
+          </div>
+          <StatCard label="סך המכירות" value={shekels(data.grossSales)} />
+          <StatCard label="עסקאות שנסגרו" value={data.soldCount} />
         </div>
       </section>
 
