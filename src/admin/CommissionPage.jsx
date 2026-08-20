@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { SOLD } from './leadStatus';
+import MigrationNotice from './MigrationNotice';
 
 /**
  * ============================================================================
@@ -116,7 +117,7 @@ export default function CommissionPage() {
     };
   }, [sales, rate]);
 
-  if (error && !sales) return <p className="text-red-700">שגיאה בטעינת הנתונים: {error}</p>;
+  if (error && !sales) return <MigrationNotice message={error} />;
   if (!sales) return <p className="text-ink/60">טוען…</p>;
 
   const rateDirty = rateDraft !== String(rate);

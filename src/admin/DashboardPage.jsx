@@ -12,6 +12,7 @@ import {
   Tooltip,
 } from 'recharts';
 import { supabase } from '../lib/supabaseClient';
+import MigrationNotice from './MigrationNotice';
 
 const PIE_COLORS = ['#A65D35', '#A6907E', '#2B2420', '#C9B294'];
 
@@ -151,7 +152,7 @@ export default function DashboardPage() {
   }, []);
 
   if (error) {
-    return <p className="text-red-700">שגיאה בטעינת הנתונים: {error}</p>;
+    return <MigrationNotice message={error} />;
   }
   if (!data) return <p className="text-ink/60">טוען…</p>;
 

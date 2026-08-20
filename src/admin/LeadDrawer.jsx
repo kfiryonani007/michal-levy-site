@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { LEAD_STATUSES, SOLD } from './leadStatus';
 import { formatPrice } from '../lib/pricing';
+import { isMissingColumn } from './MigrationNotice';
 
 /**
  * ============================================================================
@@ -404,7 +405,13 @@ export default function LeadDrawer({ lead, onClose, onSaved, onDeleted }) {
 
         {/* --- Footer actions --- */}
         <footer className="border-t border-accent bg-shell px-6 py-4">
-          {error && <p className="mb-3 text-[0.82rem] text-red-700">שגיאה: {error}</p>}
+          {error && (
+            <p className="mb-3 text-[0.82rem] text-red-700">
+              {isMissingColumn(error)
+                ? 'לא ניתן לשמור — צריך להריץ פעם אחת את קובץ העדכון 001_leads_crm.sql ב-Supabase.'
+                : `שגיאה: ${error}`}
+            </p>
+          )}
           <div className="flex items-center gap-3">
             <button
               type="button"
