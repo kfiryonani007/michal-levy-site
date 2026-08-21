@@ -91,7 +91,11 @@ export const navLinks = [
 export const hero = {
   eyebrow: 'Art, design and more...',
   titleTop: 'אם גם לכם יש קיר',
-  titleEm: 'שהוא "כמעט"...',
+  /* Straight double quotes with a space before them. Typing them as two
+     apostrophes ('') — the usual Hebrew keyboard habit for gershayim —
+     renders as two separate slanted ticks in this italic serif, which is
+     what made the line look broken. */
+  titleEm: 'שהוא "כמעט"',
   subtitle: 'אני כאן כדי להפוך אותו למושלם.',
   primaryCta: 'לצפייה ביצירות',
   secondaryCta: 'לתיאום פגישה',
@@ -364,8 +368,8 @@ export const galleryFallback = [
     tall: true,
     sizes: [
       { label: '‎50×70 ס״מ', price: 3600 },
-      { label: '‎80×110 ס״מ', price: 5050 },
-      { label: '‎110×150 ס״מ', price: 6850 },
+      { label: '‎80×110 ס״מ', price: 3900 },
+      { label: '‎110×150 ס״מ', price: 4200 },
     ],
   },
   {
@@ -377,8 +381,8 @@ export const galleryFallback = [
     alt: 'יצירת קיר בגוון חול עם קפלים רכים',
     sizes: [
       { label: '‎50×70 ס״מ', price: 2400 },
-      { label: '‎80×110 ס״מ', price: 3350 },
-      { label: '‎110×150 ס״מ', price: 4550 },
+      { label: '‎80×110 ס״מ', price: 2700 },
+      { label: '‎110×150 ס״מ', price: 3000 },
     ],
   },
   {
@@ -390,8 +394,8 @@ export const galleryFallback = [
     alt: 'יצירת קיר לבנה בטקסטורת טיח עדינה',
     sizes: [
       { label: '‎50×70 ס״מ', price: 2800 },
-      { label: '‎80×110 ס״מ', price: 3900 },
-      { label: '‎110×150 ס״מ', price: 5300 },
+      { label: '‎80×110 ס״מ', price: 3100 },
+      { label: '‎110×150 ס״מ', price: 3400 },
     ],
   },
   {
@@ -403,8 +407,8 @@ export const galleryFallback = [
     alt: 'יצירת קיר עם קווים אורגניים בגווני בז׳ וחום עץ',
     sizes: [
       { label: '‎50×70 ס״מ', price: 3200 },
-      { label: '‎80×110 ס״מ', price: 4500 },
-      { label: '‎110×150 ס״מ', price: 6100 },
+      { label: '‎80×110 ס״מ', price: 3500 },
+      { label: '‎110×150 ס״מ', price: 3800 },
     ],
   },
   {
@@ -416,8 +420,8 @@ export const galleryFallback = [
     alt: 'תבליט קיר עגול בגוון שמנת',
     sizes: [
       { label: '‎50×70 ס״מ', price: 2600 },
-      { label: '‎80×110 ס״מ', price: 3650 },
-      { label: '‎110×150 ס״מ', price: 4950 },
+      { label: '‎80×110 ס״מ', price: 2900 },
+      { label: '‎110×150 ס״מ', price: 3200 },
     ],
   },
   {
@@ -429,8 +433,8 @@ export const galleryFallback = [
     alt: 'שלוש יצירות קיר בגווני מדבר היוצרות טריפטיך',
     sizes: [
       { label: '‎50×70 ס״מ', price: 4400 },
-      { label: '‎80×110 ס״מ', price: 6150 },
-      { label: '‎110×150 ס״מ', price: 8350 },
+      { label: '‎80×110 ס״מ', price: 4700 },
+      { label: '‎110×150 ס״מ', price: 5000 },
     ],
   },
 ];

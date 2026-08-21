@@ -5,16 +5,22 @@
  *  Each piece carries its own `sizes` list — [{ label, price }, …] — set in
  *  src/data/mediaMeta.js (real photos) or the gallery fallback in
  *  src/data/site.js (placeholders), and editable per size from the admin
- *  panel at /#/admin. There is no shared formula: every size's price stands
- *  on its own, so editing one never silently moves another.
+ *  panel at /#/admin. Every size's price is still stored on its own, so
+ *  editing one never silently moves another — but they are no longer set
+ *  independently: Michal's rule is that stepping up one size costs a flat
+ *  SIZE_STEP more, whatever the piece's own starting price is. The prices in
+ *  those two files, and the live ones in Supabase, all follow it.
  * ============================================================================
  */
+
+/** What one step up in size adds to the price, in ILS. */
+export const SIZE_STEP = 300;
 
 /** Default 3-size set used when a new gallery item doesn't have one yet. */
 export const DEFAULT_SIZES = [
   { label: '‎50×70 ס״מ', price: 2400 },
-  { label: '‎80×110 ס״מ', price: 3200 },
-  { label: '‎110×150 ס״מ', price: 4400 },
+  { label: '‎80×110 ס״מ', price: 2700 },
+  { label: '‎110×150 ס״מ', price: 3000 },
 ];
 
 export function formatPrice(n) {

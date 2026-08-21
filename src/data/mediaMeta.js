@@ -20,8 +20,9 @@
  *      category  groups the item under a filter button on the gallery page
  *      tall      true → the tile spans two rows, good for portrait shots
  *      sizes     [{ label, price }] — every size this piece is sold in, each
- *                with its own price in ILS. No formula between them; edit any
- *                one without affecting the others (see src/lib/pricing.js).
+ *                with its own price in ILS. Each step up in size adds a flat
+ *                SIZE_STEP (₪300) to the one before it, so only the starting
+ *                price differs from piece to piece (see src/lib/pricing.js).
  *
  *  ⚠️ These captions are my best guess from looking at the photos — I don't
  *  actually know the room, the client, or the materials used. Please correct
@@ -41,8 +42,8 @@ export const mediaMeta = {
     tall: true,
     sizes: [
       { label: '‎50×70 ס״מ', price: 3400 },
-      { label: '‎80×110 ס״מ', price: 4750 },
-      { label: '‎110×150 ס״מ', price: 6450 },
+      { label: '‎80×110 ס״מ', price: 3700 },
+      { label: '‎110×150 ס״מ', price: 4000 },
     ],
   },
   'drape-relief-light': {
@@ -52,8 +53,8 @@ export const mediaMeta = {
     tall: true,
     sizes: [
       { label: '‎50×70 ס״מ', price: 3400 },
-      { label: '‎80×110 ס״מ', price: 4750 },
-      { label: '‎110×150 ס״מ', price: 6450 },
+      { label: '‎80×110 ס״מ', price: 3700 },
+      { label: '‎110×150 ס״מ', price: 4000 },
     ],
   },
   'living-room-drape': {
@@ -62,8 +63,8 @@ export const mediaMeta = {
     category: 'בתי לקוחות',
     sizes: [
       { label: '‎50×70 ס״מ', price: 2600 },
-      { label: '‎80×110 ס״מ', price: 3650 },
-      { label: '‎110×150 ס״מ', price: 4950 },
+      { label: '‎80×110 ס״מ', price: 2900 },
+      { label: '‎110×150 ס״מ', price: 3200 },
     ],
   },
   'plaster-fragments': {
@@ -72,8 +73,8 @@ export const mediaMeta = {
     category: 'תבליטי קיר',
     sizes: [
       { label: '‎50×70 ס״מ', price: 2200 },
-      { label: '‎80×110 ס״מ', price: 3100 },
-      { label: '‎110×150 ס״מ', price: 4200 },
+      { label: '‎80×110 ס״מ', price: 2500 },
+      { label: '‎110×150 ס״מ', price: 2800 },
     ],
   },
   'portrait-painting': {
@@ -83,8 +84,8 @@ export const mediaMeta = {
     tall: true,
     sizes: [
       { label: '‎50×70 ס״מ', price: 4200 },
-      { label: '‎80×110 ס״מ', price: 5900 },
-      { label: '‎110×150 ס״מ', price: 8000 },
+      { label: '‎80×110 ס״מ', price: 4500 },
+      { label: '‎110×150 ס״מ', price: 4800 },
     ],
   },
   'mixed-media-figure': {
@@ -94,8 +95,8 @@ export const mediaMeta = {
     tall: true,
     sizes: [
       { label: '‎50×70 ס״מ', price: 3800 },
-      { label: '‎80×110 ס״מ', price: 5300 },
-      { label: '‎110×150 ס״מ', price: 7200 },
+      { label: '‎80×110 ס״מ', price: 4100 },
+      { label: '‎110×150 ס״מ', price: 4400 },
     ],
   },
   'textured-relief-easel': {
@@ -105,8 +106,8 @@ export const mediaMeta = {
     tall: true,
     sizes: [
       { label: '‎50×70 ס״מ', price: 3000 },
-      { label: '‎80×110 ס״מ', price: 4200 },
-      { label: '‎110×150 ס״מ', price: 5700 },
+      { label: '‎80×110 ס״מ', price: 3300 },
+      { label: '‎110×150 ס״מ', price: 3600 },
     ],
   },
   'textured-relief-wall': {
@@ -115,8 +116,8 @@ export const mediaMeta = {
     category: 'תבליטי קיר',
     sizes: [
       { label: '‎50×70 ס״מ', price: 3600 },
-      { label: '‎80×110 ס״מ', price: 5050 },
-      { label: '‎110×150 ס״מ', price: 6850 },
+      { label: '‎80×110 ס״מ', price: 3900 },
+      { label: '‎110×150 ס״מ', price: 4200 },
     ],
   },
   'hallway-triptych': {
@@ -125,8 +126,8 @@ export const mediaMeta = {
     category: 'בתי לקוחות',
     sizes: [
       { label: '‎50×70 ס״מ', price: 4800 },
-      { label: '‎80×110 ס״מ', price: 6700 },
-      { label: '‎110×150 ס״מ', price: 9100 },
+      { label: '‎80×110 ס״מ', price: 5100 },
+      { label: '‎110×150 ס״מ', price: 5400 },
     ],
   },
   'triptych-angle': {
@@ -135,8 +136,8 @@ export const mediaMeta = {
     category: 'תבליטי קיר',
     sizes: [
       { label: '‎50×70 ס״מ', price: 4800 },
-      { label: '‎80×110 ס״מ', price: 6700 },
-      { label: '‎110×150 ס״מ', price: 9100 },
+      { label: '‎80×110 ס״מ', price: 5100 },
+      { label: '‎110×150 ס״מ', price: 5400 },
     ],
   },
   'abstract-painting': {
@@ -145,8 +146,8 @@ export const mediaMeta = {
     category: 'ציור',
     sizes: [
       { label: '‎50×70 ס״מ', price: 2800 },
-      { label: '‎80×110 ס״מ', price: 3900 },
-      { label: '‎110×150 ס״מ', price: 5300 },
+      { label: '‎80×110 ס״מ', price: 3100 },
+      { label: '‎110×150 ס״מ', price: 3400 },
     ],
   },
 };
