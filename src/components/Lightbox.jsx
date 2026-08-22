@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { IconClose, IconArrowLeft, IconWhatsapp, IconCheck, IconCart } from './Icons';
+import { IconClose, IconArrowLeft, IconWhatsapp, IconCheck, IconCart, IconWall } from './Icons';
 import { whatsappLink } from '../data/site';
 import { formatPrice } from '../lib/pricing';
 import { useCart } from '../lib/CartContext';
+import WallPreview from './WallPreview';
 
 /**
  * ============================================================================
@@ -28,11 +29,18 @@ export default function Lightbox({ items, index, onClose, onStep }) {
   const item = items[index];
   const sizes = item?.sizes ?? [];
   const [sizeIndex, setSizeIndex] = useState(0);
+  const [wallOpen, setWallOpen] = useState(false);
+  // Read inside the key handler, which is registered once and would otherwise
+  // close over the initial `false` forever.
+  const wallOpenRef = useRef(false);
+  wallOpenRef.current = wallOpen;
   const cart = useCart();
 
-  // A fresh piece means a fresh size choice, not whatever was picked before.
+  // A fresh piece means a fresh size choice, not whatever was picked before —
+  // and a preview of the previous piece must not survive onto this one.
   useEffect(() => {
     setSizeIndex(0);
+    setWallOpen(false);
   }, [index]);
 
   const step = useCallback((dir) => onStep((index + dir + items.length) % items.length), [
@@ -50,6 +58,10 @@ export default function Lightbox({ items, index, onClose, onStep }) {
     closeButtonRef.current?.focus();
 
     const onKey = (e) => {
+      // While the wall preview is open it owns the keyboard: its own arrow
+      // keys nudge the piece, and stepping the gallery underneath would swap
+      // the artwork out from under the visitor mid-placement.
+      if (wallOpenRef.current) return;
       if (e.key === 'Escape') onClose();
       // RTL: left arrow moves forward
       else if (e.key === 'ArrowLeft') step(1);
@@ -179,6 +191,16 @@ export default function Lightbox({ items, index, onClose, onStep }) {
               <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
+                  onClick={() => setWallOpen(true)}
+                  className="inline-flex items-center justify-center gap-2 rounded-sm border
+                             border-white/40 px-5 py-3 text-sm font-medium tracking-wide text-white
+                             transition-all duration-300 hover:border-white"
+                >
+                  <IconWall className="h-4 w-4" />
+                  הדמיה על הקיר
+                </button>
+                <button
+                  type="button"
                   onClick={() =>
                     cart.toggle({
                       itemId: item.id,
@@ -261,6 +283,16 @@ export default function Lightbox({ items, index, onClose, onStep }) {
           </div>
         )}
       </div>
+
+      {/* Sits above this dialog rather than replacing it, so closing the
+          preview drops the visitor back on the piece they were looking at. */}
+      {wallOpen && item.type === 'image' && (
+        <WallPreview
+          item={item}
+          size={sizes[sizeIndex]}
+          onClose={() => setWallOpen(false)}
+        />
+      )}
     </div>
   );
 }

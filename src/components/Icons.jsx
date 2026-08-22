@@ -156,3 +156,28 @@ export const IconCart = (p) => (
     <circle cx="17.5" cy="20" r="1.4" />
   </svg>
 );
+
+/** Framed piece hanging on a wall, with the floor line — the wall preview */
+export const IconWall = (p) => (
+  <svg {...base} {...p}>
+    <rect x="7" y="5" width="10" height="12" rx="0.5" />
+    <path d="M9.5 13.2c1.1-1.4 1.6.4 2.5-.8s1.4.6 1.9-.5" />
+    <path d="M2 20h20" />
+  </svg>
+);
+
+/** Arrow into a tray — download the rendered preview */
+export const IconDownload = (p) => (
+  <svg {...base} {...p}>
+    <path d="M12 4v12m0 0 4.5-4.5M12 16l-4.5-4.5" />
+    <path d="M4 18v1.5A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5V18" />
+  </svg>
+);
+
+/** Share sheet — used only where the device offers navigator.share */
+export const IconShare = (p) => (
+  <svg {...base} {...p}>
+    <path d="M12 15V4m0 0L8.5 7.5M12 4l3.5 3.5" />
+    <path d="M5 12v7a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-7" />
+  </svg>
+);
