@@ -3,7 +3,16 @@ import { IconClose, IconUpload, IconDownload, IconShare, IconWhatsapp } from './
 import { whatsappLink } from '../data/site';
 import { formatPrice } from '../lib/pricing';
 import { trackClick } from '../lib/analytics';
-import { wallSceneUrl, renderScene, widthFromSizeLabel } from '../lib/wallScene';
+import {
+  wallSceneUrl,
+  renderScene,
+  widthFromSizeLabel,
+  heightFromSizeLabel,
+  hangingYPct,
+  WALL_COLORS,
+  SCENE_WALL_CM,
+  SOFA_W_CM,
+} from '../lib/wallScene';
 
 /**
  * ============================================================================
@@ -35,21 +44,30 @@ import { wallSceneUrl, renderScene, widthFromSizeLabel } from '../lib/wallScene'
  * ============================================================================
  */
 
-/** Assumed width of the wall in the drawn backdrop. Chosen so a 50cm piece
-    reads as small and a 150cm piece reads as commanding, matching how the
-    scene's floor line sets expectations for a room of ordinary height. */
-const SCENE_WALL_CM = 340;
 const UPLOAD_WALL_CM = 300;
 
 const clamp = (n, lo, hi) => Math.min(hi, Math.max(lo, n));
 
 export default function WallPreview({ item, size, onClose }) {
-  const backdropDrawn = useMemo(() => wallSceneUrl(), []);
+  const [wallColor, setWallColor] = useState(WALL_COLORS[0]);
   const [upload, setUpload] = useState(null); // { url, name }
   const [wallCm, setWallCm] = useState(SCENE_WALL_CM);
-  const [pos, setPos] = useState({ xPct: 50, yPct: 42 });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+
+  // The drawn wall carries a sofa as a scale anchor; an uploaded photo has the
+  // visitor's own room for that, and a drawn sofa on top of it would be absurd.
+  const backdropDrawn = useMemo(
+    () => wallSceneUrl({ wall: wallColor, withSofa: true }),
+    [wallColor]
+  );
+
+  // Hang it where it would really be hung, for the size actually chosen,
+  // rather than at one fixed height that only suits the middle size.
+  const [pos, setPos] = useState(() => ({
+    xPct: 50,
+    yPct: hangingYPct(heightFromSizeLabel(size?.label)),
+  }));
 
   const frameRef = useRef(null);
   const dragRef = useRef(null);
@@ -143,6 +161,8 @@ export default function WallPreview({ item, size, onClose }) {
     if (upload?.url) URL.revokeObjectURL(upload.url);
     setUpload({ url: URL.createObjectURL(file), name: file.name });
     setWallCm(UPLOAD_WALL_CM);
+    // An uploaded photo has its own unknown framing, so the hanging maths for
+    // the drawn scene doesn't apply — start centred and let them drag.
     setPos({ xPct: 50, yPct: 42 });
     trackClick('wall-preview-upload');
   };
@@ -151,7 +171,7 @@ export default function WallPreview({ item, size, onClose }) {
     if (upload?.url) URL.revokeObjectURL(upload.url);
     setUpload(null);
     setWallCm(SCENE_WALL_CM);
-    setPos({ xPct: 50, yPct: 42 });
+    setPos({ xPct: 50, yPct: hangingYPct(heightFromSizeLabel(size?.label)) });
   };
 
   /* --- export ------------------------------------------------------------ */
@@ -257,14 +277,20 @@ export default function WallPreview({ item, size, onClose }) {
         className="flex min-h-0 flex-1 items-center justify-center px-4 sm:px-8"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* The frame hugs the backdrop exactly, because the piece is placed in
+            percentages OF THIS BOX. Sizing the box independently of the image
+            (w-full + a height cap) let the scene overflow and get clipped, which
+            silently cropped the floor — and with it the sofa the whole sense of
+            scale depends on. The cap therefore goes on the image, in viewport
+            units so it always resolves, and the box follows it. */}
         <div
           ref={frameRef}
-          className="relative max-h-full w-full max-w-4xl select-none overflow-hidden rounded-sm shadow-2xl"
+          className="relative inline-block max-w-full select-none overflow-hidden rounded-sm shadow-2xl"
         >
           <img
             src={backdrop}
             alt={upload ? 'הקיר שהעליתם' : 'קיר להדמיה'}
-            className="block h-auto w-full"
+            className="block max-h-[58vh] w-auto max-w-full"
             draggable={false}
           />
           <img
@@ -320,7 +346,9 @@ export default function WallPreview({ item, size, onClose }) {
                 </span>
               </div>
               <p className="mt-2 text-[0.78rem] leading-relaxed text-white/55">
-                כוונו לרוחב הקיר שרואים בתמונה, והיצירה תוצג בגודלה האמיתי ביחס אליו.
+                {upload
+                  ? 'כוונו לרוחב הקיר שרואים בתמונה, והיצירה תוצג בגודלה האמיתי ביחס אליו.'
+                  : `הספה ברוחב ${SOFA_W_CM} ס״מ — כדי לתת תחושת גודל אמיתית.`}
               </p>
             </div>
 
@@ -348,6 +376,32 @@ export default function WallPreview({ item, size, onClose }) {
               </label>
             </div>
           </div>
+
+          {/* Wall colour — only meaningful on the drawn wall; an uploaded
+              photo already has whatever colour the visitor's room is. */}
+          {!upload && (
+            <div>
+              <p className="text-[0.68rem] tracking-eyebrow text-white/60">צבע הקיר</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {WALL_COLORS.map((c) => (
+                  <button
+                    key={c.key}
+                    type="button"
+                    onClick={() => setWallColor(c)}
+                    aria-pressed={wallColor.key === c.key}
+                    aria-label={c.label}
+                    title={c.label}
+                    style={{ backgroundColor: c.bottom }}
+                    className={`h-9 w-9 rounded-full border-2 transition-transform duration-300 ${
+                      wallColor.key === c.key
+                        ? 'scale-110 border-white'
+                        : 'border-white/25 hover:border-white/60'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
           {error && (
             <p role="alert" className="text-[0.85rem] text-sand">
