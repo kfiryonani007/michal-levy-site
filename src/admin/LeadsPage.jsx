@@ -19,6 +19,13 @@ export default function LeadsPage() {
   const [openId, setOpenId] = useState(null);
   const [error, setError] = useState(null);
 
+  // Selection mode. Deleting one lead at a time from inside its card is fine
+  // for a real lead you've finished with, but useless for clearing out a batch
+  // — hence a mode where rows are picked rather than opened.
+  const [editing, setEditing] = useState(false);
+  const [selected, setSelected] = useState(() => new Set());
+  const [deleting, setDeleting] = useState(false);
+
   const refresh = () =>
     supabase
       .from('leads')
@@ -73,9 +80,45 @@ export default function LeadsPage() {
     URL.revokeObjectURL(url);
   };
 
+  const toggleSelected = (id) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+
+  const exitEditing = () => {
+    setEditing(false);
+    setSelected(new Set());
+  };
+
+  const deleteSelected = async () => {
+    const ids = [...selected];
+    if (!ids.length) return;
+    if (
+      !window.confirm(
+        `למחוק ${ids.length} לידים? הפעולה בלתי הפיכה.`
+      )
+    )
+      return;
+
+    setDeleting(true);
+    const { error: err } = await supabase.from('leads').delete().in('id', ids);
+    setDeleting(false);
+    if (err) {
+      setError(err.message);
+      return;
+    }
+    setLeads((list) => list.filter((l) => !selected.has(l.id)));
+    exitEditing();
+  };
+
   if (!leads) return <p className="text-ink/60">טוען…</p>;
 
   const openLead = leads.find((l) => l.id === openId) ?? null;
+  // "Select all" acts on what's on screen, not the whole table — selecting rows
+  // a filter is hiding is how people delete things they never saw.
+  const allShownSelected = filtered.length > 0 && filtered.every((l) => selected.has(l.id));
 
   return (
     <div>
@@ -150,12 +193,65 @@ export default function LeadsPage() {
         >
           ייצוא CSV
         </button>
+        <button
+          type="button"
+          onClick={() => (editing ? exitEditing() : setEditing(true))}
+          aria-pressed={editing}
+          className={`rounded-sm border px-4 py-2 text-[0.85rem] transition-colors ${
+            editing
+              ? 'border-clay bg-clay text-shell'
+              : 'border-accent hover:border-clay hover:text-clay'
+          }`}
+        >
+          {editing ? 'סיום עריכה' : 'עריכה'}
+        </button>
       </div>
+
+      {editing && (
+        <div className="mt-4 flex flex-wrap items-center gap-3 rounded-sm border border-clay/40
+                        bg-clay/10 px-4 py-3">
+          <label className="flex items-center gap-2 text-[0.85rem]">
+            <input
+              type="checkbox"
+              checked={allShownSelected}
+              onChange={(e) =>
+                setSelected((prev) => {
+                  const next = new Set(prev);
+                  filtered.forEach((l) => (e.target.checked ? next.add(l.id) : next.delete(l.id)));
+                  return next;
+                })
+              }
+              className="h-4 w-4 accent-clay"
+            />
+            בחירת הכל ({filtered.length})
+          </label>
+
+          <span className="text-[0.85rem] text-ink/70">נבחרו {selected.size}</span>
+
+          <button
+            type="button"
+            onClick={deleteSelected}
+            disabled={!selected.size || deleting}
+            className="mr-auto rounded-sm bg-red-700 px-5 py-2 text-[0.85rem] text-white
+                       transition-opacity hover:opacity-90 disabled:opacity-40"
+          >
+            {deleting ? 'מוחק…' : `מחיקת הנבחרים${selected.size ? ` (${selected.size})` : ''}`}
+          </button>
+          <button
+            type="button"
+            onClick={exitEditing}
+            className="text-[0.85rem] text-ink/60 hover:text-ink"
+          >
+            ביטול
+          </button>
+        </div>
+      )}
 
       <div className="mt-6 overflow-x-auto rounded-sm border border-accent/70 bg-shell">
         <table className="w-full min-w-[760px] text-right text-[0.88rem]">
           <thead>
             <tr className="border-b border-accent/60 text-[0.78rem] text-ink/60">
+              {editing && <th className="w-10 px-4 py-3" />}
               <th className="px-4 py-3 font-normal">תאריך</th>
               <th className="px-4 py-3 font-normal">שם</th>
               <th className="px-4 py-3 font-normal">טלפון</th>
@@ -167,7 +263,7 @@ export default function LeadsPage() {
           <tbody>
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-ink/50">
+                <td colSpan={editing ? 7 : 6} className="px-4 py-8 text-center text-ink/50">
                   לא נמצאו לידים.
                 </td>
               </tr>
@@ -175,18 +271,34 @@ export default function LeadsPage() {
             {filtered.map((lead) => (
               <tr
                 key={lead.id}
-                onClick={() => setOpenId(lead.id)}
+                onClick={() => (editing ? toggleSelected(lead.id) : setOpenId(lead.id))}
                 tabIndex={0}
                 role="button"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    setOpenId(lead.id);
+                    editing ? toggleSelected(lead.id) : setOpenId(lead.id);
                   }
                 }}
-                className="cursor-pointer border-b border-accent/30 transition-colors last:border-0
-                           hover:bg-warmtaupe/20 focus:bg-warmtaupe/25 focus:outline-none"
+                className={`cursor-pointer border-b border-accent/30 transition-colors last:border-0
+                           focus:bg-warmtaupe/25 focus:outline-none ${
+                             editing && selected.has(lead.id)
+                               ? 'bg-clay/15 hover:bg-clay/20'
+                               : 'hover:bg-warmtaupe/20'
+                           }`}
               >
+                {editing && (
+                  <td className="px-4 py-3">
+                    <input
+                      type="checkbox"
+                      checked={selected.has(lead.id)}
+                      onChange={() => toggleSelected(lead.id)}
+                      onClick={(e) => e.stopPropagation()}
+                      aria-label={`בחירת הליד של ${lead.name}`}
+                      className="h-4 w-4 accent-clay"
+                    />
+                  </td>
+                )}
                 <td className="whitespace-nowrap px-4 py-3 text-ink/70">
                   {new Date(lead.created_at).toLocaleDateString('he-IL')}
                 </td>
