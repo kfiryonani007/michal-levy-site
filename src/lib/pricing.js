@@ -14,13 +14,13 @@
  */
 
 /** What one step up in size adds to the price, in ILS. */
-export const SIZE_STEP = 300;
+export const SIZE_STEP = 200;
 
 /** Default 3-size set used when a new gallery item doesn't have one yet. */
 export const DEFAULT_SIZES = [
   { label: '‎50×70 ס״מ', price: 2400 },
-  { label: '‎80×110 ס״מ', price: 2700 },
-  { label: '‎110×150 ס״מ', price: 3000 },
+  { label: '‎80×110 ס״מ', price: 2600 },
+  { label: '‎110×150 ס״מ', price: 2800 },
 ];
 
 export function formatPrice(n) {
