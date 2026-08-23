@@ -150,13 +150,20 @@ export default function Footer() {
                        transition-colors duration-300 hover:text-ink"
           >
             <span>האתר נבנה על ידי</span>
-            <img
-              src="https://kfir-ai.com/assets/kfir-ai-icon-transparent.png"
-              alt=""
-              className="h-6 w-auto opacity-80 transition-opacity duration-300 group-hover:opacity-100"
-            />
+            {/* The KY mark is drawn for a dark background — its Y is near-white
+                and would disappear against this cream footer — so it sits on a
+                dark chip, the same way the brand presents itself on its own
+                site. Served from /public rather than hot-linked, so the credit
+                can't break when that site changes. */}
+            <span className="flex items-center rounded-md bg-ink px-2 py-1">
+              <img
+                src="/images/ky-icon.png"
+                alt="KY"
+                className="h-5 w-auto opacity-90 transition-opacity duration-300 group-hover:opacity-100"
+              />
+            </span>
             <span dir="ltr" className="font-semibold tracking-tight">
-              KFIR <span className="text-[#9D7AEE]">AI</span>
+              KFIR <span className="text-[#2BA8F5]">AI</span>
             </span>
           </a>
 
