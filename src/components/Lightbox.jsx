@@ -189,14 +189,19 @@ export default function Lightbox({ items, index, onClose, onStep }) {
             <div className="flex flex-col items-start gap-3 sm:items-end">
               <p className="font-serif text-2xl">{formatPrice(sizes[sizeIndex].price)}</p>
               <div className="flex flex-wrap items-center gap-2">
+                {/* Lifted above the other outline buttons on purpose: nobody
+                    arrives expecting a wall preview, so unlike "add to cart" it
+                    has to advertise itself. The clay tint keeps it distinct
+                    from the solid white booking CTA, which stays primary. */}
                 <button
                   type="button"
                   onClick={() => setWallOpen(true)}
                   className="inline-flex items-center justify-center gap-2 rounded-sm border
-                             border-white/40 px-5 py-3 text-sm font-medium tracking-wide text-white
-                             transition-all duration-300 hover:border-white"
+                             border-clay bg-clay/30 px-5 py-3 text-sm font-medium tracking-wide
+                             text-white shadow-lg shadow-clay/20 transition-all duration-300
+                             hover:bg-clay hover:text-shell"
                 >
-                  <IconWall className="h-4 w-4" />
+                  <IconWall className="h-[1.15rem] w-[1.15rem]" />
                   הדמיה על הקיר
                 </button>
                 <button
