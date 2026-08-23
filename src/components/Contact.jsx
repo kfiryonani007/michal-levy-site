@@ -33,6 +33,28 @@ import { sessionId } from '../lib/analytics';
  *  WhatsApp on whatever device ran it, which isn't a spam vector.
  * ============================================================================
  */
+/**
+ * Write one lead, surviving the page being backgrounded.
+ *
+ * `keepalive` is the whole point: the browser promises to finish the request
+ * even if the page is hidden, navigated away from, or handed to another app.
+ * That is exactly what happens a moment later when WhatsApp opens.
+ */
+function saveLead(enriched, core) {
+  const url = `${supabase.supabaseUrl}/rest/v1/leads`;
+  const headers = {
+    'Content-Type': 'application/json',
+    apikey: supabase.supabaseKey,
+    Authorization: `Bearer ${supabase.supabaseKey}`,
+  };
+  const post = (body) =>
+    fetch(url, { method: 'POST', keepalive: true, headers, body: JSON.stringify(body) });
+
+  return post(enriched)
+    .then((res) => (res.ok ? res : post(core)))
+    .catch(() => post(core).catch(() => {}));
+}
+
 export default function Contact() {
   const [status, setStatus] = useState('idle'); // idle | success
   const [fieldErrors, setFieldErrors] = useState({});
@@ -86,16 +108,6 @@ export default function Contact() {
       return;
     }
 
-    window.open(
-      `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(buildMessage(data))}`,
-      '_blank',
-      'noopener,noreferrer'
-    );
-    setStatus('success');
-
-    // Best-effort — logged for the admin's leads table, but never blocks or
-    // delays the WhatsApp flow above, which is the part that actually
-    // reaches Michal.
     const projectMessage = [cart.items.length ? `מעוניין/ת ב: ${cartLine()}` : '', data.get('message').trim()]
       .filter(Boolean)
       .join(' | ');
@@ -118,18 +130,25 @@ export default function Contact() {
       session_id: sessionId(),
     };
 
-    // `items` / `session_id` only exist once supabase/migrations/001 has run.
-    // Against an un-migrated database PostgREST rejects the whole row
-    // (PGRST204), and since this write is fire-and-forget the lead would
-    // vanish silently — so fall back to the columns that have always existed.
-    // Capturing the lead always matters more than capturing the extras.
-    supabase
-      .from('leads')
-      .insert(enriched)
-      .then(({ error }) => {
-        if (error) return supabase.from('leads').insert(core);
-      })
-      .then(() => {}, () => {});
+    // Dispatched BEFORE WhatsApp is opened, and with keepalive, because both
+    // matter: on a phone, window.open hands control to the WhatsApp app and the
+    // page is backgrounded immediately, which cancels any request still in
+    // flight. A lead that reached Michal's WhatsApp but never reached her leads
+    // table is exactly the failure this had.
+    //
+    // supabase-js can't pass keepalive through, so this is a plain REST call.
+    // `items` / `session_id` only exist once supabase/migrations/001 has run;
+    // against an un-migrated database PostgREST rejects the whole row
+    // (PGRST204), so fall back to the columns that have always existed —
+    // capturing the lead matters more than capturing the extras.
+    saveLead(enriched, core);
+
+    window.open(
+      `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(buildMessage(data))}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+    setStatus('success');
 
     cart.clear();
     form.reset();
