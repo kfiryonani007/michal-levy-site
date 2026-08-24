@@ -81,6 +81,19 @@ export default function ProjectsPage() {
     refresh();
   }, []);
 
+  // Unsaved edits live only in this component's state, so closing the tab
+  // loses them with no trace. The browser's own warning is the last line of
+  // defence for the fields that still need an explicit save.
+  useEffect(() => {
+    if (!dirtyIds.size) return undefined;
+    const warn = (e) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [dirtyIds.size]);
+
   const markDirty = (id) => setDirtyIds((s) => new Set(s).add(id));
 
   const updateField = (localId, path, val) => {
@@ -141,6 +154,18 @@ export default function ProjectsPage() {
     });
   };
 
+  /**
+   * Uploading a picture also SAVES the piece, straight away.
+   *
+   * It used to only drop the URL into local state and wait for "שמירה". The
+   * image appeared on screen the moment it uploaded, which reads as saved —
+   * so closing the tab, or the two-hour session expiring, silently threw the
+   * work away and left an orphaned file in storage with no row pointing at
+   * it. That is exactly what happened to four of Michal's paintings.
+   *
+   * Writing the row here makes the file and the record arrive together, so
+   * "the picture is on screen" and "the piece exists" can't disagree.
+   */
   const pickImage = async (item, file) => {
     if (!file) return;
     const localId = item._localId ?? item.id;
@@ -148,9 +173,30 @@ export default function ProjectsPage() {
     setError(null);
     try {
       const url = await uploadImage(item.slug, file);
-      updateField(localId, ['image_url'], url);
+      const { _localId, id, ...rest } = { ...item, image_url: url };
+      const payload = id ? { id, ...rest } : rest;
+
+      const { data, error: err } = await supabase
+        .from('gallery_items')
+        .upsert(payload)
+        .select()
+        .single();
+      if (err) throw err;
+
+      setItems((list) =>
+        list.map((it) =>
+          (it._localId ?? it.id) === localId ? { ...it, ...data, _localId: it._localId } : it
+        )
+      );
+      setDirtyIds((s) => {
+        const next = new Set(s);
+        next.delete(localId);
+        return next;
+      });
     } catch (e) {
-      setError(e?.message || 'שגיאה בהעלאת התמונה.');
+      setError(
+        `${e?.message || 'שגיאה בהעלאת התמונה.'} — התמונה לא נשמרה, נסו שוב.`
+      );
     } finally {
       setBusyId(null);
     }
