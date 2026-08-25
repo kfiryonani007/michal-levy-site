@@ -31,13 +31,17 @@ export default function GalleryPage() {
     document.title = `${gallerySection.page.title} | מיכל לוי — אמנות, עיצוב ועוד`;
   }, []);
 
+  // Categories are typed by hand in the admin, and a trailing space is
+  // invisible there while making "ציור " a different category from "ציור" —
+  // which is exactly how the filter row ended up with the same label twice.
+  // Trimming on read means a stray space can never split a category again.
   const items = useMemo(
-    () => (filter === 'all' ? source : source.filter((i) => i.category === filter)),
+    () => (filter === 'all' ? source : source.filter((i) => i.category?.trim() === filter)),
     [filter, source]
   );
 
   const galleryCategories = useMemo(
-    () => [...new Set(source.map((i) => i.category).filter(Boolean))],
+    () => [...new Set(source.map((i) => i.category?.trim()).filter(Boolean))],
     [source]
   );
 
@@ -63,36 +67,42 @@ export default function GalleryPage() {
         intro={gallerySection.page.intro}
       />
 
-      <section className="bg-shell pb-16 pt-12 sm:pb-20 sm:pt-14 lg:pb-24 lg:pt-16">
+      <section className="bg-shell pb-16 pt-6 sm:pb-20 sm:pt-8 lg:pb-24 lg:pt-10">
         <div className="container-site">
-          {/* --- Filters + count --- */}
+          {/* --- Filters + count ---
+              One scrolling row, not a wrapping block. With six categories the
+              wrapped version ran three rows deep on a phone and pushed every
+              picture below the fold — the gallery read as empty on arrival,
+              which is the worst possible first impression for a gallery. */}
           {galleryCategories.length > 0 && (
-            <Reveal className="mb-12 flex flex-wrap items-center gap-x-3 gap-y-3">
-              {[
-                { key: 'all', label: gallerySection.page.allLabel },
-                ...galleryCategories.map((c) => ({ key: c, label: c })),
-              ].map((cat) => {
-                const active = filter === cat.key;
-                return (
-                  <button
-                    key={cat.key}
-                    type="button"
-                    onClick={() => setFilter(cat.key)}
-                    aria-pressed={active}
-                    /* active state uses the "clay" accent (from the client's
-                       Pantone moodboard) rather than plain ink — pottery clay
-                       reads naturally against categories like "פיסול" */
-                    className={`rounded-sm border px-5 py-2 text-[0.85rem] tracking-wide
-                                transition-all duration-500 ease-soft ${
-                                  active
-                                    ? 'border-clay bg-clay text-shell'
-                                    : 'border-accent text-ink/75 hover:border-clay hover:text-clay'
-                                }`}
-                  >
-                    {cat.label}
-                  </button>
-                );
-              })}
+            <Reveal className="-mx-4 mb-7 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:px-0">
+              <div className="flex w-max items-center gap-2">
+                {[
+                  { key: 'all', label: gallerySection.page.allLabel },
+                  ...galleryCategories.map((c) => ({ key: c, label: c })),
+                ].map((cat) => {
+                  const active = filter === cat.key;
+                  return (
+                    <button
+                      key={cat.key}
+                      type="button"
+                      onClick={() => setFilter(cat.key)}
+                      aria-pressed={active}
+                      /* active state uses the "clay" accent (from the client's
+                         Pantone moodboard) rather than plain ink — pottery clay
+                         reads naturally against categories like "פיסול" */
+                      className={`shrink-0 whitespace-nowrap rounded-full border px-4 py-1.5
+                                  text-[0.8rem] tracking-wide transition-all duration-500 ease-soft ${
+                                    active
+                                      ? 'border-clay bg-clay text-shell'
+                                      : 'border-accent text-ink/75 hover:border-clay hover:text-clay'
+                                  }`}
+                    >
+                      {cat.label}
+                    </button>
+                  );
+                })}
+              </div>
             </Reveal>
           )}
 

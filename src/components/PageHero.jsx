@@ -14,7 +14,9 @@ import { IconArrowLeft } from './Icons';
  */
 export default function PageHero({ eyebrow, title, intro, backTo = '/', backLabel = 'חזרה לעמוד הבית' }) {
   return (
-    <header className="bg-cream pb-12 pt-28 sm:pb-14 sm:pt-32 lg:pb-16 lg:pt-40">
+    // Top padding clears the fixed header; the rest is tuned so the page's own
+    // content is reachable on a phone without scrolling past a wall of intro.
+    <header className="bg-cream pb-8 pt-24 sm:pb-12 sm:pt-32 lg:pb-14 lg:pt-40">
       <div className="container-site">
         <Reveal>
           <Link
@@ -28,13 +30,13 @@ export default function PageHero({ eyebrow, title, intro, backTo = '/', backLabe
           </Link>
         </Reveal>
 
-        <Reveal delay={80} className="mt-8 max-w-3xl">
+        <Reveal delay={80} className="mt-6 max-w-3xl sm:mt-8">
           {eyebrow && <span className="eyebrow">{eyebrow}</span>}
           <h1 className="text-3xl font-light leading-tight sm:text-4xl lg:text-[3.1rem]">
             {title}
           </h1>
-          <div className="mt-7 hairline" aria-hidden="true" />
-          {intro && <p className="mt-7 leading-[1.95] text-ink/70">{intro}</p>}
+          <div className="mt-5 hairline sm:mt-7" aria-hidden="true" />
+          {intro && <p className="mt-5 leading-[1.9] text-ink/70 sm:mt-7">{intro}</p>}
         </Reveal>
       </div>
     </header>
