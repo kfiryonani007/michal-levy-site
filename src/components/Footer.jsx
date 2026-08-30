@@ -163,11 +163,23 @@ export default function Footer() {
               />
             </span>
             <span dir="ltr" className="font-semibold tracking-tight">
-              KFIR <span className="text-[#2BA8F5]">AI</span>
+              {/* Darker than the brand's own blue: on this cream the bright
+                  #2BA8F5 measured 2.2:1, below the 4.5:1 minimum. This keeps
+                  the blue reading as blue at 5.5:1. */}
+              KFIR <span className="text-[#15628F]">AI</span>
             </span>
           </a>
 
-          <p className="text-[0.82rem] text-taupe">כל הזכויות שמורות</p>
+          <p className="flex items-center gap-3 text-[0.82rem] text-taupe">
+            <Link
+              to="/accessibility"
+              className="underline underline-offset-2 transition-colors duration-300 hover:text-wood"
+            >
+              הצהרת נגישות
+            </Link>
+            <span aria-hidden="true">·</span>
+            כל הזכויות שמורות
+          </p>
         </div>
       </div>
     </footer>

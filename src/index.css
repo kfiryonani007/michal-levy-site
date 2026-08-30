@@ -187,3 +187,158 @@
     text-shadow: 0 1px 3px rgba(43, 36, 32, 0.5), 0 1px 24px rgba(43, 36, 32, 0.45);
   }
 }
+
+/* ============================================================================
+ *  ACCESSIBILITY ADJUSTMENTS
+ * ============================================================================
+ *  Driven by classes the panel in src/components/Accessibility.jsx puts on
+ *  <html>. Kept outside @layer so these always win over component utilities —
+ *  a visitor who asked for larger text or higher contrast should get it even
+ *  where a component was opinionated about its own colours.
+ * ========================================================================== */
+
+:root {
+  --a11y-font-scale: 1;
+}
+
+/* Text size. Applied to the root font size so every rem-based size in the
+   design scales together and the layout keeps its proportions, rather than
+   forcing a single px size onto every element. */
+html.a11y-scaled {
+  font-size: calc(100% * var(--a11y-font-scale));
+}
+
+/* --- Dark contrast --- */
+html.a11y-contrast body,
+html.a11y-contrast section,
+html.a11y-contrast header,
+html.a11y-contrast footer,
+html.a11y-contrast main,
+html.a11y-contrast aside,
+html.a11y-contrast div[class*='bg-'] {
+  background-color: #000 !important;
+  color: #fff !important;
+}
+html.a11y-contrast :is(p, span, h1, h2, h3, h4, h5, h6, li, label, strong, em, td, th) {
+  color: #fff !important;
+}
+html.a11y-contrast :is(a, button) {
+  color: #ffdd00 !important;
+  border-color: #ffdd00 !important;
+}
+html.a11y-contrast img,
+html.a11y-contrast video {
+  filter: none;
+}
+
+/* --- Light contrast --- */
+html.a11y-light body,
+html.a11y-light section,
+html.a11y-light header,
+html.a11y-light footer,
+html.a11y-light main,
+html.a11y-light div[class*='bg-'] {
+  background-color: #fff !important;
+  color: #000 !important;
+}
+html.a11y-light :is(p, span, h1, h2, h3, h4, h5, h6, li, label, td, th) {
+  color: #000 !important;
+}
+html.a11y-light :is(a, button) {
+  color: #00309e !important;
+}
+
+/* --- Grayscale --- */
+html.a11y-grayscale body {
+  filter: grayscale(100%);
+}
+
+/* --- Highlight links --- */
+html.a11y-links a {
+  text-decoration: underline !important;
+  text-underline-offset: 3px;
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* --- Readable font ---
+   The site's display faces are part of its character but are not the easiest
+   to read; this swaps them for a plain system stack on request. */
+html.a11y-readable,
+html.a11y-readable :is(h1, h2, h3, h4, h5, h6, p, span, a, button, li, label, input, textarea) {
+  font-family: Arial, 'Segoe UI', system-ui, sans-serif !important;
+  letter-spacing: normal !important;
+}
+
+/* --- Text spacing --- WCAG 1.4.12 values */
+html.a11y-spacing :is(p, li, h1, h2, h3, h4, h5, h6) {
+  line-height: 1.8 !important;
+  letter-spacing: 0.12em !important;
+  word-spacing: 0.16em !important;
+}
+html.a11y-spacing p {
+  margin-bottom: 2em !important;
+}
+
+/* --- Stop animations ---
+   Also honours the OS-level setting on its own, further down. */
+html.a11y-no-motion *,
+html.a11y-no-motion *::before,
+html.a11y-no-motion *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* --- Large cursor --- */
+html.a11y-cursor,
+html.a11y-cursor * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cpath d='M6 2 6 38 15 30 21 44 28 41 22 27 34 27z' fill='%23fff' stroke='%23000' stroke-width='2.5'/%3E%3C/svg%3E") 4 2, auto !important;
+}
+
+/* The panel and its launcher must stay legible in every mode above. */
+html.a11y-contrast .a11y-panel,
+html.a11y-contrast .a11y-launcher {
+  background-color: #000 !important;
+  color: #ffdd00 !important;
+  border-color: #ffdd00 !important;
+}
+html.a11y-grayscale .a11y-launcher {
+  filter: none;
+}
+
+/* A visible focus ring everywhere — keyboard users must always be able to see
+   where they are. WCAG 2.4.7. */
+:focus-visible {
+  outline: 2px solid #a65d35;
+  outline-offset: 2px;
+}
+
+/* Respect the operating system's own reduced-motion preference without the
+   visitor having to find our panel at all. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Skip link — visible only once focused. */
+.skip-link {
+  position: absolute;
+  right: 1rem;
+  top: -100px;
+  z-index: 200;
+  background: #2b2420;
+  color: #faf7f2;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.25rem;
+  transition: top 0.2s;
+}
+.skip-link:focus {
+  top: 1rem;
+}

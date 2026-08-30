@@ -9,6 +9,8 @@ import AdminApp from './admin/AdminApp';
 import { trackPageView } from './lib/analytics';
 import { CartProvider } from './lib/CartContext';
 import SeoHead from './components/SeoHead';
+import Accessibility from './components/Accessibility';
+import AccessibilityPage from './pages/AccessibilityPage';
 
 /**
  * ============================================================================
@@ -68,17 +70,24 @@ function Shell() {
   return (
     <CartProvider>
       <SeoHead />
+      {/* First thing in the tab order: a keyboard user must be able to jump
+          past the header's links to the content. WCAG 2.4.1. */}
+      <a href="#main" className="skip-link">
+        דילוג לתוכן הראשי
+      </a>
       <Header />
-      <main id="main">
+      <main id="main" tabIndex={-1}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/gallery" element={<GalleryPage />} />
+          <Route path="/accessibility" element={<AccessibilityPage />} />
           <Route path="/service/:id" element={<ServicePage />} />
           {/* anything unrecognised goes home rather than showing a blank page */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
       <Footer />
+      <Accessibility />
     </CartProvider>
   );
 }
